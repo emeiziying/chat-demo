@@ -1,4 +1,4 @@
-;async (page) => {
+async function smoke(page) {
   let passed = 0
   const check = (condition, message) => {
     if (!condition) throw new Error(message)
