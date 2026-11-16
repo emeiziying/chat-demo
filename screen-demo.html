@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>综合能源大屏 · 卡片助手演示</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #081b29;
+      }
+      body {
+        font:
+          16px/1.6 -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        color: #e6f4ff;
+      }
+      .canvas {
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: top left;
+        background: radial-gradient(ellipse at 48% 42%, #1b4b66 0, #102d40 42%, #091e2c 85%);
+      }
+      .canvas::before {
+        content: '';
+        position: absolute;
+        inset: 100px 0 0;
+        background-image:
+          linear-gradient(#70b9df07 1px, transparent 1px),
+          linear-gradient(90deg, #70b9df07 1px, transparent 1px);
+        background-size: 48px 48px;
+        pointer-events: none;
+      }
+      .top {
+        position: absolute;
+        inset: 0 20px auto;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #8eb4c33b;
+      }
+      h1 {
+        margin: 0;
+        font-size: 27px;
+        letter-spacing: 2px;
+        font-weight: 650;
+        text-shadow: 0 0 24px #71c7ff66;
+      }
+      .clock {
+        font-size: 24px;
+        letter-spacing: 4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .panel {
+        background: linear-gradient(125deg, #29516aab, #163343ed);
+        border: 1px solid #69a9cb70;
+        border-radius: 12px;
+        padding: 14px 20px;
+        box-shadow: inset 0 0 16px #62b8f012;
+        overflow: hidden;
+      }
+      h2 {
+        color: #a9ddff;
+        margin: 0 0 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #9bb8c52e;
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      h2 span {
+        color: #168eff;
+      }
+      .left {
+        position: absolute;
+        left: 20px;
+        top: 100px;
+        bottom: 20px;
+        width: 420px;
+        display: grid;
+        grid-template-rows: 530px 1fr;
+        gap: 20px;
+      }
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 18px 0;
+      }
+      .metric strong {
+        display: block;
+        color: #168eff;
+        font-size: 25px;
+      }
+      .metric em {
+        font-style: normal;
+        border: 1px solid #168eff;
+        border-radius: 50%;
+        padding: 12px 8px;
+        box-shadow: inset 0 0 16px #168eff70;
+        font-size: 13px;
+      }
+      .metric.green strong {
+        color: #36c5b1;
+      }
+      .metric.green em {
+        border-color: #36c5b1;
+        box-shadow: inset 0 0 16px #36c5b150;
+      }
+      .scale {
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          #168eff 25%,
+          #36c5b1 25% 50%,
+          #eed644 50% 75%,
+          #e75b26 75%
+        );
+      }
+      .legend {
+        display: flex;
+        justify-content: space-around;
+        color: #9bb2c0;
+        font-size: 12px;
+        padding: 8px 0;
+      }
+      .chart {
+        height: 150px;
+        display: flex;
+        align-items: end;
+        gap: 22px;
+        padding: 12px 18px 0;
+        background: repeating-linear-gradient(to top, #9bb8c51c 0 1px, transparent 1px 38px);
+      }
+      .chart i {
+        flex: 1;
+        min-width: 7px;
+        background: #168eff;
+        height: var(--value);
+        position: relative;
+      }
+      .chart i::after {
+        content: attr(data-label);
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        font-style: normal;
+        color: #9bb2c0;
+      }
+      .right {
+        position: absolute;
+        right: 20px;
+        top: 100px;
+        bottom: 20px;
+        width: 420px;
+        display: grid;
+        grid-template-rows: 360px 275px 285px;
+        gap: 20px;
+        isolation: isolate;
+        --assistant-card-height: 285px;
+      }
+      .totals {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .totals div,
+      .benefits div {
+        background: #b3d2e20a;
+        border-radius: 9px;
+        padding: 10px;
+      }
+      .totals strong {
+        display: block;
+        font-size: 24px;
+        color: #f0f8ff;
+      }
+      small {
+        color: #a9becd;
+        font-size: 12px;
+      }
+      .benefits {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .benefits strong {
+        color: #43d0be;
+        font-size: 20px;
+        margin-right: 8px;
+      }
+      .center {
+        position: absolute;
+        top: 135px;
+        left: 480px;
+        right: 480px;
+        height: 590px;
+      }
+      .center h2 {
+        border: 0;
+        justify-content: center;
+        font-size: 15px;
+        letter-spacing: 4px;
+        color: #a5cdde;
+      }
+      .facility {
+        width: 100%;
+        height: 430px;
+        filter: drop-shadow(0 24px 32px #0005);
+      }
+      .overview {
+        display: flex;
+        justify-content: center;
+        gap: 55px;
+        text-align: center;
+      }
+      .overview strong {
+        display: block;
+        font-size: 30px;
+        color: #4bcfca;
+        font-weight: 500;
+      }
+      .alarms {
+        position: absolute;
+        left: 460px;
+        right: 460px;
+        bottom: 20px;
+        height: 285px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #9bb8c512;
+        color: #a9becd;
+        font-weight: 400;
+      }
+      td,
+      th {
+        padding: 10px 12px;
+        border-bottom: 1px solid #9bb8c51c;
+      }
+      .note {
+        position: absolute;
+        top: 76px;
+        right: 20px;
+        color: #86a8bc;
+        font-size: 11px;
+      }
+      .left .metric {
+        margin: 10px 0;
+      }
+      .left .chart {
+        height: 125px;
+      }
+      .panel p {
+        margin: 10px 0;
+      }
+      #solar-panel h2 {
+        margin-bottom: 10px;
+        padding-bottom: 9px;
+      }
+      #solar-panel .totals {
+        margin: 12px 0;
+      }
+      #solar-panel .totals strong {
+        font-size: 22px;
+      }
+      #solar-panel .benefits div {
+        padding: 6px 10px;
+      }
+      .hint {
+        position: absolute;
+        bottom: 326px;
+        left: 480px;
+        color: #8db9cf;
+        font-size: 12px;
+      }
+      a {
+        color: #72c5e7;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="canvas" id="dashboard">
+      <header class="top">
+        <h1>示例园区 · 综合能源智慧运维平台</h1>
+        <div class="clock">15:03:10</div>
+      </header>
+      <div class="note">界面与数据均为演示示例 · 未接入真实业务系统</div>
+      <aside class="left">
+        <section class="panel">
+          <h2>❄ 制冷系统 <span>❯❯</span></h2>
+          <div class="metric">
+            <div>主机能效 COP<strong>5.34</strong></div>
+            <em>优秀</em>
+          </div>
+          <div class="legend">
+            <span>优秀</span><span>良好</span><span>一般</span><span>待优化</span>
+          </div>
+          <div class="scale"></div>
+          <div class="metric green">
+            <div>冷站能效 EER<strong>4.12</strong></div>
+            <em>良好</em>
+          </div>
+          <div class="legend">
+            <span>优秀</span><span>良好</span><span>一般</span><span>待优化</span>
+          </div>
+          <div class="scale"></div>
+          <p>制冷量趋势 <small> / kWh</small></p>
+          <div class="chart">
+            <i style="--value: 80%" data-label="10.1"></i
+            ><i style="--value: 42%" data-label="10.2"></i
+            ><i style="--value: 60%" data-label="10.3"></i
+            ><i style="--value: 48%" data-label="10.4"></i
+            ><i style="--value: 85%" data-label="10.5"></i
+            ><i style="--value: 68%" data-label="10.6"></i
+            ><i style="--value: 92%" data-label="10.7"></i
+            ><i style="--value: 76%" data-label="10.8"></i>
+          </div>
+        </section>
+        <section class="panel">
+          <h2>♨ 锅炉系统 <span>❯❯</span></h2>
+          <div class="metric">
+            <div>热效率 / %<strong>94.5</strong></div>
+            <em>优秀</em>
+          </div>
+          <div class="scale"></div>
+          <p>耗气量趋势 <small> / Nm³/h</small></p>
+          <svg viewBox="0 0 380 140" width="100%" height="160" aria-label="演示耗气量趋势">
+            <path d="M0 120H380M0 80H380M0 40H380" stroke="#9bb8c530" fill="none" />
+            <path
+              d="M0 120L35 104L60 110L100 81L145 86L180 60L210 67L250 41L290 49L330 29L380 21"
+              stroke="#eed644"
+              stroke-width="2"
+              fill="none"
+            />
+          </svg>
+        </section>
+      </aside>
+      <section class="center">
+        <h2>园区运行概览 / ENERGY OVERVIEW</h2>
+        <svg class="facility" viewBox="0 0 900 470" role="img" aria-label="示例园区光伏建筑示意">
+          <defs>
+            <pattern id="solar" width="22" height="18" patternUnits="userSpaceOnUse">
+              <rect width="22" height="18" fill="#09599a" />
+              <path d="M0 0H22V18H0Z" fill="none" stroke="#47b1df" stroke-width=".5" />
+            </pattern>
+            <g id="building">
+              <path
+                d="M0 0L190 -100L380 0L190 100Z"
+                fill="url(#solar)"
+                stroke="#90cce5"
+                stroke-width="4"
+              />
+              <path d="M0 0L190 100V150L0 50Z" fill="#264f66" stroke="#78a3b9" />
+              <path d="M190 100L380 0V50L190 150Z" fill="#497186" stroke="#78a3b9" />
+              <path
+                d="M15 22L175 106M205 106L365 22"
+                stroke="#9bd4e6"
+                stroke-width="6"
+                stroke-dasharray="4 10"
+              />
+            </g>
+          </defs>
+          <path
+            d="M25 260L450 15L875 260L450 460Z"
+            fill="#0b2535"
+            stroke="#5186a1"
+            stroke-width="3"
+          />
+          <path
+            d="M50 260L450 35L850 260L450 440Z"
+            fill="none"
+            stroke="#b2c8d040"
+            stroke-width="12"
+            stroke-dasharray="5 8"
+          />
+          <use href="#building" transform="translate(250 140) scale(.75)" />
+          <use href="#building" transform="translate(105 225) scale(.75)" />
+          <use href="#building" transform="translate(395 225) scale(.75)" />
+          <use href="#building" transform="translate(250 310) scale(.75)" />
+        </svg>
+        <div class="overview">
+          <div><strong>1,286</strong><small>今日综合用能 / kWh</small></div>
+          <div><strong>99.8%</strong><small>设备在线率</small></div>
+          <div><strong>128.6</strong><small>累计减碳 / t</small></div>
+        </div>
+      </section>
+      <div class="hint">
+        助手小窗口可直接问答；右上角展开后，顶部与光伏卡片对齐。<a href="./widget-demo.html"
+          >切换普通浮窗演示</a
+        >
+      </div>
+      <section class="panel alarms">
+        <h2>⚠ 告警数据 <small>最近事件</small></h2>
+        <table>
+          <thead>
+            <tr>
+              <th>设备名称</th>
+              <th>告警内容</th>
+              <th>告警时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>制冷机组 01</td>
+              <td>回水温度接近预警阈值</td>
+              <td>2026-11-16 14:32</td>
+            </tr>
+            <tr>
+              <td>光伏逆变器 03</td>
+              <td>通讯恢复，设备运行正常</td>
+              <td>2026-11-16 14:18</td>
+            </tr>
+            <tr>
+              <td>循环水泵 02</td>
+              <td>运行状态已确认</td>
+              <td>2026-11-16 13:56</td>
+            </tr>
+            <tr>
+              <td>能耗采集器 05</td>
+              <td>数据同步完成</td>
+              <td>2026-11-16 13:42</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <aside class="right" id="screen-assistant">
+        <section class="panel" id="solar-panel">
+          <h2>▦ 光伏系统 <span>❯❯</span></h2>
+          <div>发电情况</div>
+          <div class="totals">
+            <div>
+              <strong>888</strong><small>今日发电量<br />kWh</small>
+            </div>
+            <div>
+              <strong>8,888</strong><small>本月发电量<br />kWh</small>
+            </div>
+            <div>
+              <strong>88,888</strong><small>本年发电量<br />kWh</small>
+            </div>
+          </div>
+          <p>绿色效益</p>
+          <div class="benefits">
+            <div><strong>345</strong><small>等效植树 / 棵</small></div>
+            <div><strong>128</strong><small>节约标煤 / t</small></div>
+            <div><strong>256</strong><small>减少 CO₂ / t</small></div>
+            <div><strong>0.8</strong><small>减少 SO₂ / t</small></div>
+          </div>
+        </section>
+        <section class="panel" id="carbon-panel">
+          <h2>♧ 能碳系统 <span>❯❯</span></h2>
+          <div>碳排趋势 <small> / tCO₂e</small></div>
+          <div class="chart">
+            <i style="--value: 60%" data-label="1月"></i
+            ><i style="--value: 48%" data-label="2月"></i
+            ><i style="--value: 77%" data-label="3月"></i
+            ><i style="--value: 56%" data-label="4月"></i
+            ><i style="--value: 90%" data-label="5月"></i
+            ><i style="--value: 63%" data-label="6月"></i
+            ><i style="--value: 94%" data-label="7月"></i
+            ><i style="--value: 42%" data-label="8月"></i>
+          </div>
+        </section>
+        <div id="assistant-placeholder" aria-hidden="true"></div>
+      </aside>
+    </main>
+    <script src="./widget.js"></script>
+    <script>
+      const canvas = document.querySelector('#dashboard')
+      function fitScreen() {
+        const scale = Math.min(innerWidth / 1920, innerHeight / 1080)
+        canvas.style.transform = `scale(${scale})`
+        canvas.style.left = `${(innerWidth - 1920 * scale) / 2}px`
+        canvas.style.top = `${(innerHeight - 1080 * scale) / 2}px`
+      }
+      fitScreen()
+      window.addEventListener('resize', fitScreen)
+      const assistant = DeepSeekWidget.mount({
+        container: '#screen-assistant',
+        mode: 'card',
+        theme: 'screen',
+        title: 'AI智能体',
+        namespace: new URLSearchParams(location.search).get('namespace') || 'screen-demo',
+        locale: 'zh-CN',
+      })
+    </script>
+  </body>
+</html>
