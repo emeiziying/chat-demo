@@ -13,7 +13,6 @@
       body {
         margin: 0;
         height: 100%;
-        overflow: hidden;
         background: #081b29;
       }
       body {
@@ -25,10 +24,22 @@
         color: #e6f4ff;
       }
       .canvas {
-        position: absolute;
-        width: 1920px;
-        height: 1080px;
-        transform-origin: top left;
+        --dashboard-gap: clamp(12px, 1vw, 24px);
+        position: relative;
+        width: 100%;
+        height: 100dvh;
+        min-height: 720px;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: clamp(280px, 22vw, 480px) minmax(0, 1fr) clamp(320px, 22vw, 480px);
+        grid-template-rows: auto auto minmax(0, 1fr) auto clamp(200px, 26dvh, 300px);
+        grid-template-areas:
+          'header header header'
+          'note note note'
+          'left center right'
+          'left hint right'
+          'left alarms right';
+        gap: var(--dashboard-gap);
         background: radial-gradient(ellipse at 48% 42%, #1b4b66 0, #102d40 42%, #091e2c 85%);
       }
       .canvas::before {
@@ -42,9 +53,8 @@
         pointer-events: none;
       }
       .top {
-        position: absolute;
-        inset: 0 20px auto;
-        height: 70px;
+        grid-area: header;
+        min-height: 52px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -52,7 +62,7 @@
       }
       h1 {
         margin: 0;
-        font-size: 27px;
+        font-size: clamp(20px, 1.6vw, 32px);
         letter-spacing: 2px;
         font-weight: 650;
         text-shadow: 0 0 24px #71c7ff66;
@@ -68,7 +78,11 @@
         border-radius: 12px;
         padding: 14px 20px;
         box-shadow: inset 0 0 16px #62b8f012;
-        overflow: hidden;
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #6d9bb34d transparent;
+        min-width: 0;
+        min-height: 0;
       }
       h2 {
         color: #a9ddff;
@@ -84,14 +98,12 @@
         color: #168eff;
       }
       .left {
-        position: absolute;
-        left: 20px;
-        top: 100px;
-        bottom: 20px;
-        width: 420px;
+        grid-area: left;
+        min-width: 0;
+        min-height: 0;
         display: grid;
-        grid-template-rows: 530px 1fr;
-        gap: 20px;
+        grid-template-rows: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: var(--dashboard-gap);
       }
       .metric {
         display: flex;
@@ -140,7 +152,7 @@
         height: 150px;
         display: flex;
         align-items: end;
-        gap: 22px;
+        gap: clamp(10px, 1vw, 24px);
         padding: 12px 18px 0;
         background: repeating-linear-gradient(to top, #9bb8c51c 0 1px, transparent 1px 38px);
       }
@@ -162,16 +174,15 @@
         color: #9bb2c0;
       }
       .right {
-        position: absolute;
-        right: 20px;
-        top: 100px;
-        bottom: 20px;
-        width: 420px;
+        grid-area: right;
+        position: relative;
+        min-width: 0;
+        min-height: 0;
         display: grid;
-        grid-template-rows: 360px 275px 285px;
-        gap: 20px;
+        grid-template-rows: minmax(180px, 1.15fr) minmax(130px, 0.85fr) var(--assistant-card-height);
+        gap: var(--dashboard-gap);
         isolation: isolate;
-        --assistant-card-height: 285px;
+        --assistant-card-height: clamp(240px, 28dvh, 320px);
       }
       .totals {
         display: grid;
@@ -205,11 +216,13 @@
         margin-right: 8px;
       }
       .center {
-        position: absolute;
-        top: 135px;
-        left: 480px;
-        right: 480px;
-        height: 590px;
+        grid-area: center;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px 0;
       }
       .center h2 {
         border: 0;
@@ -219,14 +232,17 @@
         color: #a5cdde;
       }
       .facility {
+        flex: 1;
+        min-height: 0;
         width: 100%;
-        height: 430px;
+        max-width: 1280px;
+        height: 0;
         filter: drop-shadow(0 24px 32px #0005);
       }
       .overview {
         display: flex;
         justify-content: center;
-        gap: 55px;
+        gap: clamp(16px, 3vw, 72px);
         text-align: center;
       }
       .overview strong {
@@ -236,15 +252,14 @@
         font-weight: 500;
       }
       .alarms {
-        position: absolute;
-        left: 460px;
-        right: 460px;
-        bottom: 20px;
-        height: 285px;
+        grid-area: alarms;
+        min-height: 0;
+        min-width: 0;
       }
       table {
         border-collapse: collapse;
         width: 100%;
+        min-width: 560px;
         text-align: left;
         font-size: 14px;
       }
@@ -259,9 +274,8 @@
         border-bottom: 1px solid #9bb8c51c;
       }
       .note {
-        position: absolute;
-        top: 76px;
-        right: 20px;
+        grid-area: note;
+        text-align: right;
         color: #86a8bc;
         font-size: 11px;
       }
@@ -288,14 +302,107 @@
         padding: 6px 10px;
       }
       .hint {
-        position: absolute;
-        bottom: 326px;
-        left: 480px;
+        grid-area: hint;
+        min-width: 0;
         color: #8db9cf;
         font-size: 12px;
       }
       a {
         color: #72c5e7;
+      }
+      .canvas > * {
+        min-width: 0;
+        position: relative;
+      }
+      .center h2 {
+        flex-shrink: 0;
+        text-align: center;
+      }
+      .overview {
+        flex-shrink: 0;
+        width: 100%;
+      }
+      .overview > div {
+        min-width: 0;
+      }
+      .overview strong {
+        font-size: clamp(22px, 1.6vw, 32px);
+      }
+      .benefits > div,
+      .totals > div {
+        min-width: 0;
+      }
+      #solar-panel .totals strong {
+        font-size: clamp(16px, 1.15vw, 24px);
+        white-space: nowrap;
+        letter-spacing: -0.4px;
+      }
+      .panel h2 {
+        font-size: 16px;
+      }
+      #assistant-placeholder {
+        min-height: 0;
+      }
+      @media (max-width: 1199px) {
+        .canvas {
+          height: auto;
+          min-height: 100dvh;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          grid-template-rows: auto auto 360px auto 760px 260px;
+          grid-template-areas: 'header header' 'note note' 'center center' 'hint hint' 'left right' 'alarms alarms';
+        }
+        .center {
+          padding-top: 0;
+        }
+      }
+      @media (max-width: 767px) {
+        .canvas {
+          padding: 12px;
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: auto auto 320px auto auto auto 280px;
+          grid-template-areas: 'header' 'note' 'center' 'hint' 'right' 'left' 'alarms';
+        }
+        .top {
+          flex-wrap: wrap;
+          gap: 8px;
+          padding-bottom: 8px;
+        }
+        h1 {
+          font-size: 20px;
+          letter-spacing: 1px;
+        }
+        .clock {
+          font-size: 18px;
+          letter-spacing: 2px;
+        }
+        .note {
+          text-align: left;
+        }
+        .left {
+          grid-template-rows: auto auto;
+        }
+        .right {
+          --assistant-card-height: 320px;
+          grid-template-rows: auto auto var(--assistant-card-height);
+        }
+        .panel {
+          padding: 12px;
+        }
+        .overview {
+          gap: 12px;
+        }
+        .overview strong {
+          font-size: 22px;
+        }
+        .overview small {
+          font-size: 11px;
+        }
+        .left .chart {
+          margin-bottom: 24px;
+        }
+        #carbon-panel .chart {
+          margin-bottom: 24px;
+        }
       }
     </style>
   </head>
@@ -486,15 +593,6 @@
     </main>
     <script src="./widget.js"></script>
     <script>
-      const canvas = document.querySelector('#dashboard')
-      function fitScreen() {
-        const scale = Math.min(innerWidth / 1920, innerHeight / 1080)
-        canvas.style.transform = `scale(${scale})`
-        canvas.style.left = `${(innerWidth - 1920 * scale) / 2}px`
-        canvas.style.top = `${(innerHeight - 1080 * scale) / 2}px`
-      }
-      fitScreen()
-      window.addEventListener('resize', fitScreen)
       const assistant = DeepSeekWidget.mount({
         container: '#screen-assistant',
         mode: 'card',

@@ -87,10 +87,11 @@ async function smoke(page) {
   const solar = await page.locator('#solar-panel').boundingBox()
   const placeholder = await page.locator('#assistant-placeholder').boundingBox()
   check(
-    small.width === 420 && small.height === 285,
-    'card dimensions follow dashboard design coordinates'
+    Math.abs(small.width - placeholder.width) < 1 &&
+      Math.abs(small.height - placeholder.height) < 1,
+    'card dimensions follow the responsive reserved slot'
   )
-  check(small.y === placeholder.y, 'small card occupies reserved slot')
+  check(Math.abs(small.y - placeholder.y) < 1, 'small card occupies reserved slot')
   check(await frame.locator('textarea').isVisible(), 'small card accepts direct text input')
   const inputBox = await frame.locator('textarea').boundingBox()
   const iframeBox = await page.locator('iframe').boundingBox()
@@ -131,15 +132,21 @@ async function smoke(page) {
     const panel = document
       .querySelector('[data-deepseek-widget]')
       .shadowRoot.querySelector('.panel')
-    return Math.abs(panel.getBoundingClientRect().height - 960) < 1
+    const container = document.querySelector('#screen-assistant')
+    return (
+      Math.abs(panel.getBoundingClientRect().height - container.getBoundingClientRect().height) < 1
+    )
   })
   const large = await panel.boundingBox()
   check(Math.abs(large.y - solar.y) < 1, 'expanded top aligns exactly with solar card')
   check(
-    large.x === small.x && large.width === small.width,
+    Math.abs(large.x - small.x) < 1 && Math.abs(large.width - small.width) < 1,
     'expansion keeps width and horizontal position'
   )
-  check(large.y + large.height === small.y + small.height, 'expansion keeps bottom edge anchored')
+  check(
+    Math.abs(large.y + large.height - small.y - small.height) < 1,
+    'expansion keeps bottom edge anchored'
+  )
   check(
     page.frames().includes(frame) && frameNavigations === 0,
     'expansion preserves iframe without navigation'
@@ -162,7 +169,7 @@ async function smoke(page) {
   })
   check(hidden, 'expanded panel covers underlying cards')
   check(
-    (await page.locator('#assistant-placeholder').boundingBox()).y === placeholder.y,
+    Math.abs((await page.locator('#assistant-placeholder').boundingBox()).y - placeholder.y) < 1,
     'underlying layout retains reserved slot'
   )
   await page.screenshot({ path: 'output/playwright/screen-expanded.png' })
@@ -173,7 +180,8 @@ async function smoke(page) {
         document
           .querySelector('[data-deepseek-widget]')
           .shadowRoot.querySelector('.panel')
-          .getBoundingClientRect().height - 285
+          .getBoundingClientRect().height -
+          document.querySelector('#assistant-placeholder').getBoundingClientRect().height
       ) < 1
   )
   check(
@@ -219,14 +227,16 @@ async function smoke(page) {
         document
           .querySelector('[data-deepseek-widget]')
           .shadowRoot.querySelector('.panel')
-          .getBoundingClientRect().height - 640
+          .getBoundingClientRect().height -
+          document.querySelector('#screen-assistant').getBoundingClientRect().height
       ) < 1
   )
   const scaled = await panel.boundingBox()
   const scaledSolar = await page.locator('#solar-panel').boundingBox()
+  const responsiveColumn = await page.locator('#screen-assistant').boundingBox()
   check(
-    Math.abs(scaled.y - scaledSolar.y) < 1 && Math.abs(scaled.width - 280) < 1,
-    'scaled dashboard preserves alignment and width'
+    Math.abs(scaled.y - scaledSolar.y) < 1 && Math.abs(scaled.width - responsiveColumn.width) < 1,
+    'responsive dashboard preserves alignment and column width'
   )
   await page.evaluate(() => window.DeepSeekWidget.mount().close())
   await page.waitForFunction(

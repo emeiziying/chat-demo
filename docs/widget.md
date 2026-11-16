@@ -252,3 +252,33 @@ Pages 使用 GitHub Actions 模式，不再读取 gh-pages 分支。gh-pages 保
 - [大屏卡片](https://emeiziying.github.io/chat-demo/screen-demo.html)
 - [普通浮窗](https://emeiziying.github.io/chat-demo/widget-demo.html)
 - [独立聊天](https://emeiziying.github.io/chat-demo/)
+
+## 演示大屏的混合布局
+
+`public/screen-demo.html` 使用CSS Grid和可读字号，移除了整画布的`transform: scale()`与窗口resize脚本。
+
+| 视口宽度   | 布局                                                    |
+| ---------- | ------------------------------------------------------- |
+| ≥1200px    | 左右侧栏有最小/最大宽度，中间场景伸缩，告警位于中间下方 |
+| 768–1199px | 场景在顶部，左右卡片在下一行，告警在底部                |
+| <768px     | 场景、右侧卡片和助手、左侧卡片、告警按单栏排列          |
+
+桌面布局填满视口，最低高度720px；更短窗口可纵向滚动。卡片高度受限时内部滚动，
+告警表格在自己的容器横向滚动，页面本身不产生横向滚动。超宽屏扩展中间区域，不留固定比例黑边。
+
+助手卡片常规高度为`clamp(240px, 28dvh, 320px)`，手机为320px。
+展开时填满右侧栏，在所有布局下保持顶部与光伏卡片对齐、底边与小卡片一致；
+浏览器resize、展开和恢复均保留同一个iframe及其消息、草稿。
+
+以上是演示大屏的布局规则；组件库本身仍由宿主`container`范围控制定位。
+已有业务系统可保留自己的布局，只需将助手挂到覆盖整列的定位容器中。
+
+多尺寸浏览器验证：
+
+```sh
+npx --package @playwright/cli playwright-cli -s=layout open http://127.0.0.1:8090/screen-demo.html
+npx --package @playwright/cli playwright-cli -s=layout run-code --filename tests/screen-layout-smoke.js
+```
+
+测试覆盖1920×1080、2560×1080、3840×2160、1366×768、1280×720、
+1024×768、768×1024和390×844。截图保存在`output/playwright/`。
