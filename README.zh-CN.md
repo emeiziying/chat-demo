@@ -90,6 +90,7 @@ upward expansion aligned to the host column, and a dark screen theme. See
 - [网页右下角浮窗](https://emeiziying.github.io/chat-demo/widget-demo.html)
 - [独立聊天页面](https://emeiziying.github.io/chat-demo/)
 
-Published from the `gh-pages` branch. Source changes live on `feature/floating-widget`;
-updating that branch does not automatically publish a new site. Rebuild and update
-`gh-pages` to release. API calls still require the user's own API key.
+GitHub Actions automatically checks, builds and deploys pushes to `feature/floating-widget`.
+For a manual deployment, open **Actions → Deploy GitHub Pages → Run workflow** and select
+`feature/floating-widget`. The old `gh-pages` branch is retained as release history.
+API calls still require the user's own API key.

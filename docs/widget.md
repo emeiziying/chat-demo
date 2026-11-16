@@ -233,3 +233,22 @@ npx --package @playwright/cli playwright-cli -s=screen run-code --filename tests
 
 该脚本使用独立本地命名空间与假 Key，拦截所有上游请求，以本地 SSE 验证问答链路；
 截图保存在 `output/playwright/screen-card.png` 和 `screen-expanded.png`。
+
+## GitHub Actions 自动部署
+
+`.github/workflows/pages.yml` 监听 `feature/floating-widget` 分支的 push：
+安装锁定依赖 → 类型检查 → lint → 静态构建 → 上传 Pages artifact → 部署。
+检查或构建失败时不会发布。pnpm 固定为本地已验证的 10.33.4，Node 使用 24。
+
+也可在 Actions → Deploy GitHub Pages → Run workflow 中选择
+`feature/floating-widget` 手动部署。默认 main 保留上游代码，请不要选择 main；
+Pages 环境只允许功能分支发布，避免误发布旧版独立聊天页。
+
+Pages 使用 GitHub Actions 模式，不再读取 gh-pages 分支。gh-pages 保留为之前的
+静态发布历史。线上 `deployment.json` 记录源码提交、分支和构建运行地址，便于确认版本。
+
+页面地址保持不变：
+
+- [大屏卡片](https://emeiziying.github.io/chat-demo/screen-demo.html)
+- [普通浮窗](https://emeiziying.github.io/chat-demo/widget-demo.html)
+- [独立聊天](https://emeiziying.github.io/chat-demo/)
