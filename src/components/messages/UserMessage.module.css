@@ -102,3 +102,24 @@
   gap: 8px;
   margin: 6px 10px 10px;
 }
+
+:global(html[data-presentation='card']) .container {
+  padding-bottom: 10px;
+
+  &.isFirst {
+    padding-top: 8px;
+  }
+}
+
+:global(html[data-presentation='card']) .bubble {
+  max-width: 90%;
+  padding: 8px 12px;
+  border-radius: var(--chat-radius, 14px);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+:global(html[data-presentation='card']) .bottom {
+  height: 24px;
+  margin-top: 2px;
+}

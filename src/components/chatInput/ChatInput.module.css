@@ -330,3 +330,63 @@
     cursor: not-allowed;
   }
 }
+
+:global(html[data-presentation='card']) .wrapper {
+  --line-height: 20px;
+  --input-padding-top: 8px;
+  max-height: min(180px, 55dvh);
+  border-radius: var(--chat-radius, 14px);
+  font-size: 14px;
+}
+
+:global(html[data-presentation='card']) .textarea,
+:global(html[data-presentation='card']) .mirror {
+  min-height: 36px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+:global(html[data-presentation='card']) .functionRow {
+  gap: 4px;
+  margin-top: 0;
+  padding: 5px 8px 7px;
+}
+
+:global(html[data-presentation='card']) .toggles {
+  gap: 5px;
+}
+
+:global(html[data-presentation='card']) .toggle {
+  gap: 3px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+:global(html[data-presentation='card']) .right {
+  gap: 0;
+
+  > button {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+:global(html[data-presentation='card']) .sendButton {
+  width: 28px;
+  height: 28px;
+  margin-left: 3px;
+  border-radius: 8px;
+}
+
+:global(html[data-presentation='card']) .attachments {
+  gap: 6px;
+  padding: 8px 8px 0;
+}
+
+:global(html[data-presentation='card']) .attachment {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+}

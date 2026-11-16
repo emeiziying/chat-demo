@@ -12,6 +12,25 @@ const subscribeOsTheme = (listener: () => void) => {
 
 const getOsTheme = (): Theme => (query.matches ? 'dark' : 'light')
 
+const SCREEN_THEME_EVENT = 'assistant:theme'
+const getScreenTheme = () => document.documentElement.dataset.chatTheme === 'screen'
+const subscribeScreenTheme = (listener: () => void) => {
+  window.addEventListener(SCREEN_THEME_EVENT, listener)
+  return () => window.removeEventListener(SCREEN_THEME_EVENT, listener)
+}
+
+/** A host-selected screen theme is temporary and does not replace personal settings. */
+export const setScreenTheme = (enabled: boolean) => {
+  if (enabled) {
+    document.documentElement.dataset.chatTheme = 'screen'
+  } else {
+    delete document.documentElement.dataset.chatTheme
+  }
+  syncTheme()
+  window.dispatchEvent(new Event(SCREEN_THEME_EVENT))
+  syncPageBackground()
+}
+
 const resolveTheme = (preference: ThemePreference, osTheme: Theme): Theme =>
   preference === 'system' ? osTheme : preference
 
@@ -19,7 +38,8 @@ const resolveTheme = (preference: ThemePreference, osTheme: Theme): Theme =>
 export const useTheme = (): Theme => {
   const preference = useSettings((state) => state.themePreference)
   const osTheme = useSyncExternalStore(subscribeOsTheme, getOsTheme)
-  return resolveTheme(preference, osTheme)
+  const screenTheme = useSyncExternalStore(subscribeScreenTheme, getScreenTheme)
+  return screenTheme ? 'dark' : resolveTheme(preference, osTheme)
 }
 
 const syncPageBackground = () => {
@@ -53,7 +73,9 @@ const applyTheme = (theme: Theme) => {
 let appliedTheme: Theme | null = null
 
 const syncTheme = () => {
-  const theme = resolveTheme(useSettings.getState().themePreference, getOsTheme())
+  const theme = getScreenTheme()
+    ? 'dark'
+    : resolveTheme(useSettings.getState().themePreference, getOsTheme())
   if (theme !== appliedTheme) {
     appliedTheme = theme
     applyTheme(theme)

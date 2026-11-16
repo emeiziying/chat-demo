@@ -8,3 +8,83 @@ html[data-embed] body {
 html[data-embed] #root {
   height: 100%;
 }
+
+/* Screen tokens sit above the original light/dark aliases without persisting a preference. */
+html[data-chat-theme='screen'] body {
+  --chat-surface: #112c3e;
+  --chat-surface-raised: #18394b;
+  --chat-input-bg: #0c2331;
+  --chat-text: #edf6ff;
+  --chat-text-secondary: #b2c8d7;
+  --chat-border: rgba(109, 198, 232, 0.28);
+  --chat-accent: #47d6c3;
+  --chat-user-bubble: #096da7;
+  --chat-assistant-bubble: rgba(158, 195, 216, 0.1);
+  --chat-radius: 12px;
+  --dsw-alias-bg-base: var(--chat-surface);
+  --dsw-alias-bg-layer-2: var(--chat-surface-raised);
+  --dsw-alias-bg-layer-3: #204457;
+  --dsw-alias-bg-skeleton: rgba(178, 210, 230, 0.08);
+  --dsw-alias-border-inverted: var(--chat-border);
+  --dsw-alias-border-l1: rgba(109, 198, 232, 0.14);
+  --dsw-alias-border-l2-darkmode-thin: var(--chat-border);
+  --dsw-alias-border-l2: var(--chat-border);
+  --dsw-alias-border-l3: rgba(109, 198, 232, 0.4);
+  --dsw-alias-brand-primary: var(--chat-accent);
+  --dsw-alias-brand-text: #69e1d1;
+  --dsw-alias-brand-primary-invert: var(--chat-accent);
+  --dsw-alias-button-contrast-fill: #21475b;
+  --dsw-alias-button-elevated-fill: #1e4356;
+  --dsw-alias-button-ghost-active-border: rgba(71, 214, 195, 0.32);
+  --dsw-alias-button-ghost-active-fill: rgba(71, 214, 195, 0.14);
+  --dsw-alias-button-ghost-active-hover: rgba(71, 214, 195, 0.22);
+  --dsw-alias-button-primary-fill: #087cc7;
+  --dsw-alias-button-primary-hover: #1595e7;
+  --dsw-alias-interactive-bg-active: rgba(109, 198, 232, 0.16);
+  --dsw-alias-interactive-bg-hover: rgba(109, 198, 232, 0.1);
+  --dsw-alias-interactive-bg-hover-accent: rgba(109, 198, 232, 0.22);
+  --dsw-alias-label-primary: var(--chat-text);
+  --dsw-alias-label-secondary: var(--chat-text-secondary);
+  --dsw-alias-label-tertiary: #91afc2;
+  --dsw-alias-label-caption: #86a6ba;
+  --dsw-alias-label-dimmed: #3d6d82;
+  --dsw-alias-label-primary-inverted: #f2fbff;
+  --dsw-alias-markdown-citation: #27556b;
+  --dsw-alias-markdown-code-block-banner: #1a3c4e;
+  --dsw-alias-markdown-code-block: #0b202e;
+  --dsw-alias-markdown-inline-code: #224a60;
+  --dsw-alias-markdown-placeholder: #204457;
+  --dsw-alias-markdown-tag: #204457;
+  --dsw-alias-toast-bg: #2a5368;
+  --dsw-alias-tooltip-bg: #244c61;
+  --dsw-specific-bubble: var(--chat-user-bubble);
+  --dsw-specific-input-major: var(--chat-input-bg);
+  --dsw-specific-login-input: var(--chat-input-bg);
+  --dsw-specific-menu: #18394b;
+  --dsw-specific-selector: #204457;
+  --dsw-specific-sidebar-fill: #102b3c;
+  --dsw-specific-sidebar-nav-item-active-accent: #234e63;
+  --dsw-specific-sidebar-nav-item-hover: #1b3d50;
+  --scroll-color: rgba(135, 181, 205, 0.28);
+  --scroll-color-hover: rgba(135, 181, 205, 0.48);
+}
+
+html[data-chat-theme='screen'] .ds-markdown {
+  overflow-wrap: anywhere;
+}
+html[data-chat-theme='screen'] .markdown-table-wrapper,
+html[data-chat-theme='screen'] .md-code-block {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+html[data-chat-theme='screen'] .md-code-block > pre {
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Card presentation reserves room for actual conversation even before expansion. */
+html[data-presentation='card'] body {
+  --message-list-padding-horizontal: 12px;
+  --dsw-font-markdown-base: 14px/1.65 var(--dsw-font-family);
+}

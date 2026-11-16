@@ -440,3 +440,42 @@
     max-width: 100%;
   }
 }
+
+:global(html[data-presentation='card']) .dialog {
+  --modal-header-gap: 4px;
+  align-self: center;
+  width: calc(100% - 12px);
+  max-width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  max-height: calc(100% - 12px);
+  padding: 10px 12px 12px;
+  border-radius: 12px;
+}
+
+:global(html[data-presentation='card']) .dialogMain {
+  flex-direction: column;
+}
+
+:global(html[data-presentation='card']) .navigation {
+  flex-direction: row;
+  gap: 4px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+:global(html[data-presentation='card']) .navItem {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  min-height: 28px;
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+:global(html[data-presentation='card']) .content {
+  margin: 0;
+  padding: 8px 0 0;
+}

@@ -35,3 +35,23 @@
   margin: 0 auto;
   padding-bottom: 24px;
 }
+
+:global(html[data-presentation='card']) .column {
+  width: calc(100% - 24px);
+  max-width: none;
+  padding-bottom: 8px;
+}
+
+:global(html[data-presentation='card']) .container {
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+
+:global(html[data-presentation='card']) .scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}

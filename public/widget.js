@@ -9,6 +9,21 @@
   window.DeepSeekWidget = {
     mount(options = {}) {
       if (instance) return instance
+      const card = options.mode === 'card'
+      if (options.mode && !['card', 'floating'].includes(options.mode)) {
+        throw new Error('Widget mode must be card or floating.')
+      }
+      const container = card
+        ? typeof options.container === 'string'
+          ? document.querySelector(options.container)
+          : options.container
+        : document.body
+      if (!(container instanceof HTMLElement)) {
+        throw new Error('Card mode requires an existing container element.')
+      }
+      if (card && getComputedStyle(container).position === 'static') {
+        throw new Error('Card container must have position: relative, absolute or fixed.')
+      }
       const src = new URL(options.src || defaultSrc, location.href)
       if (!['https:', 'http:'].includes(src.protocol)) {
         throw new Error('Widget src must use HTTP or HTTPS.')
@@ -18,12 +33,15 @@
       }
       src.searchParams.set('mode', 'embed')
       src.searchParams.set('parentOrigin', location.origin)
+      if (card) src.searchParams.set('presentation', 'card')
+      if (options.theme === 'screen') src.searchParams.set('chatTheme', 'screen')
       if (options.namespace) src.searchParams.set('namespace', options.namespace)
       const host = document.createElement('div')
       host.setAttribute('data-deepseek-widget', '')
-      // The host carries positioning so even aggressive business-page CSS stays outside.
-      host.style.cssText =
-        'all:initial;position:fixed;inset:0;pointer-events:none;z-index:2147483000;'
+      host.dataset.mode = card ? 'card' : 'floating'
+      if (options.theme === 'screen') host.dataset.theme = 'screen'
+      // Card coordinates share the dashboard's containing block and transform scale.
+      host.style.cssText = `all:initial;position:${card ? 'absolute' : 'fixed'};inset:0;pointer-events:none;z-index:${card ? '10' : '2147483000'};`
       const shadow = host.attachShadow({ mode: 'open' })
       const style = document.createElement('style')
       style.textContent = `
@@ -56,7 +74,28 @@
           .panel { inset: 0; width: 100%; height: 100%; border-radius: 0; border: 0; }
           .bar { padding-top: env(safe-area-inset-top); flex-basis: calc(58px + env(safe-area-inset-top)); }
         }
-        @media (prefers-reduced-motion: reduce) { .launcher { transition: none; } }
+        :host([data-mode="card"]) .panel {
+          inset: auto 0 0; width: 100%; height: min(var(--assistant-card-height, 285px), 100%);
+          border-radius: 12px; transition: height 240ms ease; box-shadow: 0 8px 28px #06132233;
+        }
+        :host([data-mode="card"]) .panel[data-expanded="true"] { height: 100%; }
+        :host([data-mode="card"]) .launcher { display: none; }
+        :host([data-mode="card"]) .bar { flex-basis: 44px; padding: 0 14px; }
+        :host([data-theme="screen"]) { color-scheme: dark; }
+        :host([data-theme="screen"]) .panel {
+          border-color: var(--assistant-border, #69c6e847);
+          background: var(--assistant-surface, #102d40f5);
+          box-shadow: inset 0 0 18px #62b8f010, 0 8px 28px #06132255;
+        }
+        :host([data-theme="screen"]) .bar {
+          color: var(--assistant-text, #eaf6ff); background: transparent; border-color: #69c6e82b;
+        }
+        :host([data-theme="screen"]) .dot { background: var(--assistant-accent, #35c6b4); box-shadow: 0 0 10px #35c6b450; }
+        :host([data-theme="screen"]) .title { color: var(--assistant-accent, #35c6b4); }
+        :host([data-theme="screen"]) .minimize { color: #9ecbdc; }
+        :host([data-theme="screen"]) .minimize:hover { background: #a3d3ed14; }
+        :host([data-theme="screen"]) iframe { background: #102d40; }
+        @media (prefers-reduced-motion: reduce) { .launcher, .panel { transition: none; } }
       `
       const launcher = document.createElement('button')
       launcher.type = 'button'
@@ -74,7 +113,8 @@
       const panel = document.createElement('section')
       panel.id = 'assistant-panel'
       panel.className = 'panel'
-      panel.hidden = true
+      panel.hidden = !card
+      panel.dataset.expanded = 'false'
       panel.setAttribute('role', 'region')
       panel.setAttribute('aria-label', options.title || '智能助手')
       const bar = document.createElement('div')
@@ -87,10 +127,16 @@
       const minimize = document.createElement('button')
       minimize.type = 'button'
       minimize.className = 'minimize'
-      minimize.textContent = '−'
+      minimize.textContent = card ? '⛶' : '−'
       minimize.setAttribute(
         'aria-label',
-        options.locale === 'en-US' ? 'Minimize chat' : '最小化聊天'
+        card
+          ? options.locale === 'en-US'
+            ? 'Expand chat'
+            : '展开聊天'
+          : options.locale === 'en-US'
+            ? 'Minimize chat'
+            : '最小化聊天'
       )
       bar.append(dot, title, minimize)
       panel.append(bar)
@@ -98,6 +144,34 @@
       let frame = null
       let visible = false
       let destroyed = false
+      let expanded = false
+      if (card) {
+        minimize.setAttribute('aria-expanded', 'false')
+        minimize.setAttribute('aria-controls', panel.id)
+      }
+      const setExpanded = (value) => {
+        if (!card || destroyed || value === expanded) return
+        expanded = value
+        panel.dataset.expanded = String(value)
+        minimize.setAttribute('aria-expanded', String(value))
+        minimize.setAttribute(
+          'aria-label',
+          options.locale === 'en-US'
+            ? value
+              ? 'Restore chat'
+              : 'Expand chat'
+            : value
+              ? '恢复聊天'
+              : '展开聊天'
+        )
+        minimize.textContent = value ? '⊡' : '⛶'
+        host.dispatchEvent(
+          new CustomEvent('assistant:expand-change', {
+            bubbles: true,
+            detail: { expanded: value },
+          })
+        )
+      }
       const send = (data) => frame?.contentWindow?.postMessage(data, src.origin)
       const onMessage = (event) => {
         if (!frame || event.source !== frame.contentWindow || event.origin !== src.origin) return
@@ -119,10 +193,14 @@
           panel.append(frame)
         }
         send({ type: 'assistant:visibility', visible: true })
-        minimize.focus({ preventScroll: true })
+        if (!card) minimize.focus({ preventScroll: true })
       }
       const close = () => {
         if (destroyed) return
+        if (card) {
+          setExpanded(false)
+          return
+        }
         visible = false
         send({ type: 'assistant:visibility', visible: false })
         panel.hidden = true
@@ -133,22 +211,26 @@
         if (event.key === 'Escape' && visible) close()
       }
       launcher.addEventListener('click', () => (visible ? close() : open()))
-      minimize.addEventListener('click', close)
+      minimize.addEventListener('click', () => (card ? setExpanded(!expanded) : close()))
       shadow.addEventListener('keydown', onKeyDown)
       window.addEventListener('message', onMessage)
-      document.body.append(host)
+      container.append(host)
       instance = {
         open,
         close,
+        expand: () => setExpanded(true),
+        collapse: () => setExpanded(false),
+        toggleExpanded: () => setExpanded(!expanded),
         destroy() {
           if (destroyed) return
-          close()
+          send({ type: 'assistant:visibility', visible: false })
           destroyed = true
           window.removeEventListener('message', onMessage)
           host.remove()
           instance = null
         },
       }
+      if (card) open()
       return instance
     },
   }

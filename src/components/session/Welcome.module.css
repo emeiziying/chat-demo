@@ -66,3 +66,24 @@
     user-select: none;
   }
 }
+
+:global(html[data-presentation='card']) .welcome {
+  justify-content: flex-end;
+  padding: 0 12px 10px;
+}
+
+:global(html[data-presentation='card']) .greeting {
+  margin: auto 0;
+  padding: 8px 0;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+:global(html[data-presentation='card']) .caveat {
+  display: none;
+}
+
+:global(html[data-presentation='card']) .container {
+  flex-direction: column;
+}

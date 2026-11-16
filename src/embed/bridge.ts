@@ -1,3 +1,4 @@
+import { setScreenTheme } from '../app/theme.js'
 import { setLocale, setThemePreference } from '../services/settings.js'
 import { stopReadAloud } from '../services/speech/readAloud.js'
 import { parentOrigin } from './config.js'
@@ -25,7 +26,11 @@ export const bindEmbedBridge = () => {
         'theme' in data &&
         (data.theme === 'light' || data.theme === 'dark' || data.theme === 'system')
       ) {
+        setScreenTheme(false)
         setThemePreference(data.theme)
+      }
+      if ('theme' in data && data.theme === 'screen') {
+        setScreenTheme(true)
       }
     }
     if (data.type === 'assistant:visibility' && 'visible' in data && data.visible === false) {

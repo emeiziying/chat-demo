@@ -16,3 +16,6 @@ export const parentOrigin = (() => {
     return null
   }
 })()
+
+export const isCard = isEmbedded && params.get('presentation') === 'card'
+export const isScreenTheme = isEmbedded && params.get('chatTheme') === 'screen'

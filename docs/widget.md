@@ -23,7 +23,8 @@
 
 `src` 默认取 `widget.js` 同目录的 `index.html`，仅接受 HTTP/HTTPS。
 `title` 使用纯文本；`locale` 支持 `zh-CN` / `en-US`；`theme` 支持
-`light` / `dark` / `system`，只控制聊天内容，外层窗口保持浅色。
+`light` / `dark` / `system` / `screen`。前三者控制聊天内容，外层窗口保持浅色；
+`screen` 同时提供大屏深色外壳与会话主题，详见下方大屏卡片模式。
 不传语言和主题时沿用聊天页设置。脚本应在 body 存在后执行。
 
 `namespace` 可选，支持 1–128 位字母、数字、`_ . : @ -`。业务系统应使用稳定且不含敏感信息的
@@ -111,3 +112,117 @@ npx --package @playwright/cli playwright-cli -s=widget run-code --filename tests
 ```
 
 截图保存到 `output/playwright/`。真实手机软键盘、麦克风和远端 ASR/TTS 仍需实机/有效 Key 验证。
+
+## 大屏卡片模式
+
+访问构建后的 `screen-demo.html`，查看示例能源大屏。页面使用模拟业务数据；
+聊天默认仍需用户自己的 API Key，演示页不会假装已接入园区数据。
+
+卡片模式直接显示输入区，没有悬浮启动按钮。点击右上角展开后，底部与宽度不变，
+向上扩展到宿主容器顶部；恢复时回到原卡片高度。全过程不移动、不重建 iframe。
+
+```html
+<!-- 容器覆盖从光伏卡片顶部到助手卡片底部的完整右侧栏范围。 -->
+<aside id="screen-assistant" class="screen-right-column">
+  <section class="solar-card">光伏系统</section>
+  <section class="carbon-card">能碳系统</section>
+  <div class="assistant-placeholder" aria-hidden="true"></div>
+</aside>
+<script src="/assistant/widget.js"></script>
+<script>
+  const assistant = DeepSeekWidget.mount({
+    src: '/assistant/index.html',
+    container: '#screen-assistant', // 也可传 HTMLElement
+    mode: 'card',
+    theme: 'screen',
+    title: 'AI智能体',
+    namespace: 'tenant-001:user-123',
+    locale: 'zh-CN',
+  })
+</script>
+```
+
+以下为 1920×1080 设计画布的布局示例，尺寸由宿主按实际设计调整：
+
+```css
+.screen-right-column {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  bottom: 20px;
+  width: 420px;
+  display: grid;
+  grid-template-rows: 360px 275px 285px;
+  gap: 20px;
+  isolation: isolate;
+  --assistant-card-height: 285px;
+}
+```
+
+`container` 必须存在且具有 `position: relative / absolute / fixed`，其顶部就是展开的对齐线。
+**不要只传底部 285px 小卡片的容器**，否则展开也只能填满这张小卡片。
+容器内保留底部占位，防止覆盖展示的助手影响原有卡片布局。宿主不要对其设置裁切展开区的
+`overflow: hidden`，也不要在其上放置更高层级、会遮住助手的卡片。
+
+大屏使用 `transform: scale()` 时，将此容器放入同一个缩放画布。组件使用设计坐标，
+不把浏览器视口像素混入大屏坐标；响应式变更容器高度后，展开仍自动对齐其顶部。
+卡片模式不会套用普通浮窗在小屏上的全屏行为。
+
+### 外部控制
+
+```js
+assistant.expand() // 向上展开到容器顶部
+assistant.collapse() // 恢复小卡片
+assistant.toggleExpanded() // 切换
+assistant.open() // 确保可见，不改变展开状态
+assistant.close() // card 模式下等同 collapse，不隐藏聊天
+assistant.destroy() // 卸载
+
+document
+  .querySelector('#screen-assistant')
+  .addEventListener('assistant:expand-change', (event) => console.log(event.detail.expanded))
+```
+
+事件从 widget 宿主冒泡到容器，携带 `{ expanded: boolean }`，只在状态实际变化时触发。
+卡片恢复后仍可直接问答，所以恢复操作不会停止录音或文字生成；销毁会释放 iframe 资源。
+如宿主页面整体被隐藏或切换业务账号，请调用 `destroy()`，需要时重新挂载。
+
+### 会话窗口样式
+
+`theme: 'screen'` 为临时的深蓝青色主题，不覆盖用户保存的 light/dark/system 偏好。
+普通页面与普通浮窗保持原样。`presentation=card` 会压缩导航、输入区和消息间距，
+隐藏底部提示，保留历史抽屉和设置。只改变可用高度，不在展开时放大字号。
+
+样式分为两层：
+
+1. 外壳由 `public/widget.js` 的 Shadow DOM 控制，可在宿主容器设置以下变量：
+
+   ```css
+   .screen-right-column {
+     --assistant-card-height: 285px;
+     --assistant-surface: #102d40f5;
+     --assistant-border: #69c6e847;
+     --assistant-text: #eaf6ff;
+     --assistant-accent: #35c6b4;
+   }
+   ```
+
+2. iframe 内的聊天样式由 `src/embed/embed.css` 定义。`--chat-surface`、
+   `--chat-input-bg`、`--chat-text`、`--chat-text-secondary`、`--chat-border`、
+   `--chat-accent`、`--chat-user-bubble`、`--chat-assistant-bubble`、`--chat-radius`
+   映射到现有主题别名；组件通过 CSS Modules 中的 `data-presentation='card'`
+   调整布局。修改这些源样式后重新构建。宿主 CSS 变量不会自动穿过 iframe。
+
+用户消息为蓝色气泡，助手消息为浅透明气泡；代码、表格保留内部横向滚动，
+消息区内部纵向滚动，输入区固定在聊天窗口底部。设置面板在小卡片内滚动，
+无需先展开才能访问。
+
+大屏验证脚本：
+
+```sh
+npx --package @playwright/cli playwright-cli -s=screen open http://127.0.0.1:8090/screen-demo.html
+npx --package @playwright/cli playwright-cli -s=screen run-code --filename tests/screen-smoke.js
+```
+
+该脚本使用独立本地命名空间与假 Key，拦截所有上游请求，以本地 SSE 验证问答链路；
+截图保存在 `output/playwright/screen-card.png` 和 `screen-expanded.png`。

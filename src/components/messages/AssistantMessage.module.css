@@ -137,3 +137,24 @@
     --search-row-site-logo-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
+
+:global(html[data-chat-theme='screen']) .message {
+  min-width: 0;
+
+  :global(.ds-assistant-message-main-content) {
+    padding: 10px 12px;
+    border: 1px solid rgba(109, 198, 232, 0.12);
+    border-radius: var(--chat-radius);
+    background: var(--chat-assistant-bubble);
+  }
+}
+
+:global(html[data-presentation='card']) .bottom {
+  gap: 6px;
+  padding-top: 4px;
+  padding-bottom: 6px;
+}
+
+:global(html[data-presentation='card']) .actions {
+  gap: 5px;
+}

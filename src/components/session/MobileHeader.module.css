@@ -17,3 +17,13 @@
   font: var(--dsw-font-s-strong-14);
   color: var(--dsw-alias-label-primary);
 }
+
+:global(html[data-presentation='card']) .header {
+  height: 32px;
+  padding: 0 8px;
+
+  > button {
+    width: 28px;
+    height: 28px;
+  }
+}

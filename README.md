@@ -79,3 +79,7 @@ src/
 This fork adds an embeddable bottom-right chat widget. Build the project and open
 `widget-demo.html`, or integrate `widget.js` into your existing business app.
 See [业务系统浮窗接入](docs/widget.md) for configuration, API methods and deployment requirements.
+
+Screen dashboard cards are also supported: open `screen-demo.html` for inline chat,
+upward expansion aligned to the host column, and a dark screen theme. See
+[大屏卡片模式](docs/widget.md#大屏卡片模式).

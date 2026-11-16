@@ -68,3 +68,20 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+:global(html[data-presentation='card']) .inputContainer {
+  width: calc(100% - 24px);
+  max-width: none;
+  padding-bottom: 10px;
+}
+
+:global(html[data-presentation='card']) .caveat {
+  display: none;
+}
+
+:global(html[data-presentation='card']) .inputContainer {
+  position: relative;
+  bottom: auto;
+  flex-shrink: 0;
+  margin: 0 auto;
+}

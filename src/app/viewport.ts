@@ -1,6 +1,7 @@
+import { isCard } from '../embed/config.js'
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react'
 
-/** 窄于 768px 按移动端布局 */
+/** 卡片始终使用紧凑布局；独立页面窄于 768px 时使用移动端布局。 */
 const query = window.matchMedia('not all and (min-width: 768px)')
 
 const subscribe = (onChange: () => void) => {
@@ -8,7 +9,7 @@ const subscribe = (onChange: () => void) => {
   return () => query.removeEventListener('change', onChange)
 }
 
-export const useIsMobile = () => useSyncExternalStore(subscribe, () => query.matches)
+export const useIsMobile = () => useSyncExternalStore(subscribe, () => isCard || query.matches)
 
 const preventPageScroll = (event: TouchEvent) => {
   if (event.touches.length !== 1) {

@@ -5,10 +5,17 @@ import { ensureKatex } from './services/markdown/katex.js'
 import './app/theme.css'
 import './app/global.css'
 import './embed/embed.css'
-import { isEmbedded } from './embed/config.js'
+import { isCard, isEmbedded, isScreenTheme } from './embed/config.js'
 
 if (isEmbedded) {
   document.documentElement.dataset.embed = 'true'
+}
+
+if (isCard) {
+  document.documentElement.dataset.presentation = 'card'
+}
+if (isScreenTheme) {
+  document.documentElement.dataset.chatTheme = 'screen'
 }
 
 ensureKatex()
