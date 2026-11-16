@@ -90,7 +90,8 @@ upward expansion aligned to the host column, and a dark screen theme. See
 - [网页右下角浮窗](https://emeiziying.github.io/chat-demo/widget-demo.html)
 - [独立聊天页面](https://emeiziying.github.io/chat-demo/)
 
-GitHub Actions automatically checks, builds and deploys pushes to `feature/floating-widget`.
+The fork defaults to `feature/floating-widget`. GitHub Actions automatically checks, builds
+and deploys pushes to this branch.
 For a manual deployment, open **Actions → Deploy GitHub Pages → Run workflow** and select
 `feature/floating-widget`. The old `gh-pages` branch is retained as release history.
 API calls still require the user's own API key.

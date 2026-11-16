@@ -241,7 +241,7 @@ npx --package @playwright/cli playwright-cli -s=screen run-code --filename tests
 检查或构建失败时不会发布。pnpm 固定为本地已验证的 10.33.4，Node 使用 24。
 
 也可在 Actions → Deploy GitHub Pages → Run workflow 中选择
-`feature/floating-widget` 手动部署。默认 main 保留上游代码，请不要选择 main；
+`feature/floating-widget` 手动部署。fork 默认分支也是该功能分支；main 仅保留上游代码，请不要选择 main；
 Pages 环境只允许功能分支发布，避免误发布旧版独立聊天页。
 
 Pages 使用 GitHub Actions 模式，不再读取 gh-pages 分支。gh-pages 保留为之前的
