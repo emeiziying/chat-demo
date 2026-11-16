@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>浮窗助手 · 接入演示</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: #22314a;
+        background: #f6f8fc;
+        font:
+          15px/1.7 -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 7vw;
+        background: white;
+        border-bottom: 1px solid #e7ebf2;
+      }
+      header strong {
+        letter-spacing: -0.5px;
+        font-size: 20px;
+      }
+      header span {
+        color: #75829b;
+        font-size: 13px;
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 70px 32px 120px;
+      }
+      .eyebrow {
+        color: #365cf5;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
+      h1 {
+        margin: 14px 0 18px;
+        font-size: clamp(32px, 5vw, 52px);
+        line-height: 1.2;
+        letter-spacing: -1.5px;
+        font-weight: 650;
+      }
+      .intro {
+        max-width: 530px;
+        color: #6b7890;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 44px;
+      }
+      article {
+        background: white;
+        border: 1px solid #e7ebf2;
+        border-radius: 16px;
+        padding: 24px;
+      }
+      article span {
+        color: #8b97ad;
+        font-size: 12px;
+      }
+      article strong {
+        display: block;
+        margin: 14px 0 4px;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      article p {
+        margin: 0;
+        color: #7b88a0;
+        font-size: 13px;
+      }
+      .integration {
+        margin-top: 28px;
+      }
+      .integration h2 {
+        font-size: 17px;
+        margin: 0 0 12px;
+      }
+      pre {
+        overflow: auto;
+        border-radius: 10px;
+        background: #f5f7fc;
+        padding: 20px;
+        font-size: 13px;
+        line-height: 1.8;
+      }
+      button {
+        border: 0;
+        border-radius: 8px;
+        background: #365cf5;
+        padding: 10px 18px;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+      a {
+        margin-left: 20px;
+        color: #365cf5;
+      }
+      @media (max-width: 650px) {
+        main {
+          padding: 40px 20px 100px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>业务工作台 <span> / 演示环境</span></strong
+      ><span>DeepSeek · Widget</span>
+    </header>
+    <main>
+      <div class="eyebrow">AN ASSISTANT, WITHIN REACH</div>
+      <h1>工作照常，<br />助手就在右下角。</h1>
+      <p class="intro">
+        这是一个模拟业务页面。点击右下角打开聊天，体验附件、语音和历史会话。最小化后，你的草稿仍在。
+      </p>
+      <div class="grid">
+        <article>
+          <span>01 / 轻量接入</span><strong>一段脚本</strong>
+          <p>独立 iframe 与样式隔离，适配已有业务系统。</p>
+        </article>
+        <article>
+          <span>02 / 连续体验</span><strong>随时收起</strong>
+          <p>保留草稿与对话，收起时自动停止语音。</p>
+        </article>
+        <article>
+          <span>03 / 原有能力</span><strong>完整聊天</strong>
+          <p>文件上传、语音输入、朗读和流式回复。</p>
+        </article>
+      </div>
+      <article class="integration">
+        <h2>嵌入你的业务页面</h2>
+        <pre>
+&lt;script src="/assistant/widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const assistant = DeepSeekWidget.mount({
+    src: '/assistant/index.html',
+    title: '智能助手',
+    namespace: 'tenant-demo:user-demo',
+    locale: 'zh-CN'
+  });
+&lt;/script&gt;</pre
+        >
+        <button id="open-assistant" type="button">打开助手 ↗</button
+        ><a href="./index.html">独立聊天页</a>
+      </article>
+    </main>
+    <script src="./widget.js"></script>
+    <script>
+      const assistant = DeepSeekWidget.mount({
+        title: '智能助手',
+        namespace: 'widget-demo',
+        locale: 'zh-CN',
+      })
+      document.querySelector('#open-assistant').addEventListener('click', () => assistant.open())
+    </script>
+  </body>
+</html>

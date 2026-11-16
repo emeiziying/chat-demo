@@ -1,0 +1,10 @@
+/* Scope every override to embed mode; the standalone application stays unchanged. */
+html[data-embed] {
+  --message-list-padding-horizontal: 16px;
+}
+html[data-embed] body {
+  --message-list-padding-horizontal: 16px;
+}
+html[data-embed] #root {
+  height: 100%;
+}

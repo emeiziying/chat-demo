@@ -1,3 +1,4 @@
+import { HIDDEN_EVENT } from '../../embed/bridge.js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TranslationMessage } from '../../i18n/index.js'
 import { transcribe } from '../../services/api/speech.js'
@@ -144,6 +145,10 @@ export const useVoiceInput = (onText: (text: string) => void) => {
   }, [status])
 
   useEffect(() => cancelOperation, [cancelOperation])
+  useEffect(() => {
+    window.addEventListener(HIDDEN_EVENT, cancel)
+    return () => window.removeEventListener(HIDDEN_EVENT, cancel)
+  }, [cancel])
 
   /** 当前录音的频谱分析节点，未录音时为 null */
   const getAnalyser = useCallback(() => recordingRef.current?.analyser ?? null, [])

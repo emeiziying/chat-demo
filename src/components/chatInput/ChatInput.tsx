@@ -1,3 +1,4 @@
+import { isEmbedded } from '../../embed/config.js'
 import clsx from 'clsx'
 import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import {
@@ -52,6 +53,8 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
   const thinking = useSettings((state) => state.thinking)
   const importingHistory = useChatStore((state) => state.importingHistory)
   const isMobile = useIsMobile()
+  // iframe width controls layout; pointer capability controls phone-specific input behavior.
+  const touchInput = isMobile && (!isEmbedded || window.matchMedia('(pointer: coarse)').matches)
   const search = useSettings((state) => state.search)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -145,7 +148,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
       return
     }
     stopReadAloud()
-    if (isMobile) {
+    if (touchInput) {
       textareaRef.current?.blur()
     } else {
       textareaRef.current?.focus()
@@ -165,17 +168,21 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
       <div className={styles.textareaWrapper}>
         <textarea
           ref={textareaRef}
-          className={clsx(styles.textarea, recording && isMobile && styles.textareaHidden)}
+          className={clsx(styles.textarea, recording && touchInput && styles.textareaHidden)}
           placeholder={t('chatInputPlaceholderChat')}
           rows={2}
           // 移动端不自动聚焦，避免一打开就弹出键盘
-          autoFocus={!isMobile}
+          autoFocus={!isEmbedded && !isMobile}
           disabled={importingHistory}
           value={text}
           onChange={(event) => setText(event.target.value)}
           onMouseDown={(event) => {
             // 首次点击时手动聚焦，避免 Safari 把整个页面滚到输入框位置。
-            if (isMobile && event.button === 0 && document.activeElement !== event.currentTarget) {
+            if (
+              touchInput &&
+              event.button === 0 &&
+              document.activeElement !== event.currentTarget
+            ) {
               event.preventDefault()
               event.currentTarget.focus({ preventScroll: true })
             }
@@ -194,7 +201,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
             }
           }}
         />
-        {recording && isMobile ? <Spectrum getAnalyser={voice.getAnalyser} /> : null}
+        {recording && touchInput ? <Spectrum getAnalyser={voice.getAnalyser} /> : null}
         <div className={styles.mirror} aria-hidden>
           {`${text}\n`}
         </div>

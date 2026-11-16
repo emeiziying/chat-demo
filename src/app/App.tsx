@@ -25,6 +25,8 @@ import { CollapsedSider } from '../components/sider/CollapsedSider.js'
 import { closeMobileSider } from '../components/sider/mobileSiderState.js'
 import { MobileSider, Sider } from '../components/sider/Sider.js'
 import styles from './App.module.css'
+import { isEmbedded } from '../embed/config.js'
+import { bindEmbedBridge } from '../embed/bridge.js'
 
 export const App = () => {
   const t = useTranslate()
@@ -59,6 +61,7 @@ export const App = () => {
   // 文件数、存储空间达到上限时，附件上只显示「上传失败」，原因用 toast 说明
   useEffect(() => onUploadNotice(showToast), [])
   useEffect(bindChatPersistence, [])
+  useEffect(bindEmbedBridge, [])
 
   // 搜索结果面板只属于当前会话
   useEffect(closeSearchPanel, [activeId])
@@ -70,7 +73,9 @@ export const App = () => {
   useEffect(() => {
     void initChat()
     // 首次打开先在设置里输入 API Key
-    ensureApiKey()
+    if (!isEmbedded) {
+      ensureApiKey()
+    }
   }, [])
 
   return (

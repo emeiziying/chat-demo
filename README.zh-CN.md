@@ -73,3 +73,9 @@ src/
 ## 许可证
 
 [MIT](LICENSE)。构建会将许可证复制到 `dist/LICENSE`，分发时请一并保留；第三方依赖遵循各自的许可证。
+
+## Floating widget / 网页浮窗
+
+This fork adds an embeddable bottom-right chat widget. Build the project and open
+`widget-demo.html`, or integrate `widget.js` into your existing business app.
+See [业务系统浮窗接入](docs/widget.md) for configuration, API methods and deployment requirements.

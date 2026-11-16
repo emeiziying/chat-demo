@@ -1,3 +1,4 @@
+import { storagePrefix } from '../embed/config.js'
 import { create } from 'zustand'
 import type { TtsVoice } from './api/speech.js'
 import { normalizeLocation, type UserLocation } from './location.js'
@@ -20,14 +21,14 @@ type Settings = {
 }
 
 const KEYS = {
-  apiKey: 'chat-demo:api-key',
-  locale: 'chat-demo:locale',
-  location: 'chat-demo:location',
-  themePreference: 'chat-demo:theme-preference',
-  ttsVoice: 'chat-demo:tts-voice',
-  thinking: 'chat-demo:thinking',
-  search: 'chat-demo:search',
-  siderCollapsed: 'chat-demo:sider-collapsed',
+  apiKey: `${storagePrefix}:api-key`,
+  locale: `${storagePrefix}:locale`,
+  location: `${storagePrefix}:location`,
+  themePreference: `${storagePrefix}:theme-preference`,
+  ttsVoice: `${storagePrefix}:tts-voice`,
+  thinking: `${storagePrefix}:thinking`,
+  search: `${storagePrefix}:search`,
+  siderCollapsed: `${storagePrefix}:sider-collapsed`,
 } as const
 
 const read = (key: string) => {
