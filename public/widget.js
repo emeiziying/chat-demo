@@ -83,22 +83,22 @@
         :host([data-mode="card"]) .bar { flex-basis: 44px; padding: 0 14px; }
         :host([data-theme="screen"]) { color-scheme: dark; }
         :host([data-theme="screen"]) .panel {
-          border-color: var(--assistant-border, #69c6e847);
-          background: var(--assistant-surface, rgba(16, 45, 64, .64));
+          border-color: var(--assistant-border, var(--screen-panel-border, #69a9cb70));
+          background: var(--assistant-surface, var(--screen-panel-background, linear-gradient(125deg, #29516aab, #163343ed)));
           -webkit-backdrop-filter: blur(var(--assistant-blur, 18px)) saturate(120%);
           backdrop-filter: blur(var(--assistant-blur, 18px)) saturate(120%);
-          box-shadow: inset 0 0 18px #62b8f010, 0 8px 28px #06132255;
+          box-shadow: var(--screen-panel-shadow, inset 0 0 16px #62b8f012);
         }
         :host([data-theme="screen"]) .bar {
-          color: var(--assistant-text, #eaf6ff); background: transparent; border-color: #69c6e82b;
+          color: var(--assistant-text, var(--screen-text, #e6f4ff)); background: transparent; border-color: var(--screen-panel-divider, #9bb8c52e);
         }
-        :host([data-theme="screen"]) .dot { background: var(--assistant-accent, #35c6b4); box-shadow: 0 0 10px #35c6b450; }
-        :host([data-theme="screen"]) .title { color: var(--assistant-accent, #35c6b4); }
+        :host([data-theme="screen"]) .dot { background: var(--assistant-accent, var(--screen-accent, #168eff)); box-shadow: 0 0 10px #168eff50; }
+        :host([data-theme="screen"]) .title { color: var(--assistant-title, var(--screen-panel-title, #a9ddff)); }
         :host([data-theme="screen"]) .minimize { color: #9ecbdc; }
         :host([data-theme="screen"]) .minimize:hover { background: #a3d3ed14; }
         :host([data-theme="screen"]) iframe { background: transparent; color-scheme: normal; }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-          :host([data-theme="screen"]) .panel { background: var(--assistant-fallback-surface, #102d40f5); }
+          :host([data-theme="screen"]) .panel { background: var(--assistant-fallback-surface, #1b3b50); }
         }
         @media (prefers-reduced-motion: reduce) { .launcher, .panel { transition: none; } }
       `

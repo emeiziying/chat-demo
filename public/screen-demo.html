@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
     <title>综合能源大屏 · 卡片助手演示</title>
+    <link rel="stylesheet" href="./screen-theme.css" />
     <style>
       * {
         box-sizing: border-box;
@@ -21,7 +22,7 @@
           BlinkMacSystemFont,
           'Segoe UI',
           sans-serif;
-        color: #e6f4ff;
+        color: var(--screen-text);
       }
       .canvas {
         --dashboard-gap: clamp(12px, 1vw, 24px);
@@ -73,11 +74,13 @@
         font-variant-numeric: tabular-nums;
       }
       .panel {
-        background: linear-gradient(125deg, #29516aab, #163343ed);
-        border: 1px solid #69a9cb70;
+        background: var(--screen-panel-background);
+        border: 1px solid var(--screen-panel-border);
         border-radius: 12px;
         padding: 14px 20px;
-        box-shadow: inset 0 0 16px #62b8f012;
+        box-shadow: var(--screen-panel-shadow);
+        -webkit-backdrop-filter: blur(18px) saturate(120%);
+        backdrop-filter: blur(18px) saturate(120%);
         overflow: auto;
         scrollbar-width: thin;
         scrollbar-color: #6d9bb34d transparent;
@@ -85,10 +88,10 @@
         min-height: 0;
       }
       h2 {
-        color: #a9ddff;
+        color: var(--screen-panel-title);
         margin: 0 0 16px;
         padding-bottom: 12px;
-        border-bottom: 1px solid #9bb8c52e;
+        border-bottom: 1px solid var(--screen-panel-divider);
         display: flex;
         justify-content: space-between;
         font-size: 18px;

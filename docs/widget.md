@@ -189,7 +189,7 @@ document
 
 ### 会话窗口样式
 
-`theme: 'screen'` 为临时的深蓝青色主题，不覆盖用户保存的 light/dark/system 偏好。
+`theme: 'screen'` 为临时的业务卡片蓝灰主题，不覆盖用户保存的 light/dark/system 偏好。
 普通页面与普通浮窗保持原样。`presentation=card` 会压缩导航、输入区和消息间距，
 隐藏底部提示，保留历史抽屉和设置。只改变可用高度，不在展开时放大字号。
 
@@ -200,12 +200,13 @@ document
    ```css
    .screen-right-column {
      --assistant-card-height: 285px;
-     --assistant-surface: rgba(16, 45, 64, 0.64);
+     --assistant-surface: var(--screen-panel-background);
      --assistant-blur: 18px;
-     --assistant-fallback-surface: #102d40f5;
-     --assistant-border: #69c6e847;
-     --assistant-text: #eaf6ff;
-     --assistant-accent: #35c6b4;
+     --assistant-fallback-surface: #1b3b50;
+     --assistant-border: var(--screen-panel-border);
+     --assistant-text: var(--screen-text);
+     --assistant-title: var(--screen-panel-title);
+     --assistant-accent: var(--screen-accent);
    }
    ```
 
@@ -282,3 +283,14 @@ npx --package @playwright/cli playwright-cli -s=layout run-code --filename tests
 
 测试覆盖1920×1080、2560×1080、3840×2160、1366×768、1280×720、
 1024×768、768×1024和390×844。截图保存在`output/playwright/`。
+
+### 与业务卡片共用配色
+
+`public/screen-theme.css` 是大屏演示与 iframe 会话共用的调色板。大屏通过link加载，
+聊天页通过构建入口引入，因此修改这一个文件即可同步底色、边框、阴影、标题、正文和输入区。
+会话外壳优先读取宿主的`--screen-*`变量，未提供时也使用相同的默认值。
+
+自定义大屏接入时，可在宿主引入同目录的`screen-theme.css`，业务卡片与会话都使用
+`--screen-panel-background`、`--screen-panel-border`、`--screen-panel-shadow`、
+`--screen-panel-title`等变量。原`--assistant-*`变量仍可单独覆盖聊天外壳。
+宿主动态改变量不会穿过iframe；需改变会话内部颜色时，应修改共享调色板并重新构建。

@@ -57,11 +57,37 @@ async function smoke(page) {
     const style = getComputedStyle(el)
     return {
       filter: style.backdropFilter || style.webkitBackdropFilter,
-      background: style.backgroundColor,
+      background: style.backgroundImage,
+      border: style.borderTopColor,
+      shadow: style.boxShadow,
     }
   })
   check(glass.filter.includes('blur(18px)'), 'host applies Gaussian backdrop blur')
-  check(glass.background.includes('0.64'), 'host tint is translucent')
+  const businessSurface = await page.locator('#solar-panel').evaluate((el) => {
+    const style = getComputedStyle(el)
+    return {
+      background: style.backgroundImage,
+      border: style.borderTopColor,
+      shadow: style.boxShadow,
+    }
+  })
+  check(
+    glass.background === businessSurface.background && glass.background.includes('linear-gradient'),
+    'chat and business cards share the same translucent gradient'
+  )
+  check(
+    glass.border === businessSurface.border && glass.shadow === businessSurface.shadow,
+    'chat and business cards share border and shadow'
+  )
+  const titleColor = await page
+    .locator('[data-deepseek-widget]')
+    .locator('.title')
+    .evaluate((el) => getComputedStyle(el).color)
+  check(
+    titleColor ===
+      (await page.locator('#solar-panel h2').evaluate((el) => getComputedStyle(el).color)),
+    'chat title matches business card title color'
+  )
   check(
     (await page.locator('iframe').evaluate((el) => getComputedStyle(el).colorScheme)) ===
       'normal' &&
@@ -111,9 +137,10 @@ async function smoke(page) {
     'screen theme does not overwrite personal preference'
   )
   check(
-    (await frame.evaluate(() =>
-      getComputedStyle(document.body).getPropertyValue('--dsw-specific-input-major').trim()
-    )) === '#0c2331',
+    (await frame
+      .locator('textarea')
+      .evaluate((el) => getComputedStyle(el.parentElement.parentElement).backgroundColor)) ===
+      'rgba(13, 34, 48, 0.42)',
     'input uses screen semantic color'
   )
   await frame.locator('textarea').fill('当前光伏发电情况如何？')

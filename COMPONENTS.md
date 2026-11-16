@@ -26,3 +26,5 @@ expand/collapse/toggleExpanded 只对卡片生效。销毁后的旧实例方法�
 
 screen 外壳样式支持 `--assistant-blur`、`--assistant-surface` 和
 `--assistant-fallback-surface`，分别控制背景模糊、半透明底色及不支持模糊时的降级底色。
+
+大屏业务卡片与会话外壳共用 public/screen-theme.css 的 --screen-\* 调色板；--assistant-title 可单独覆盖聊天标题。

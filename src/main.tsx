@@ -4,6 +4,7 @@ import { setupTheme } from './app/theme.js'
 import { ensureKatex } from './services/markdown/katex.js'
 import './app/theme.css'
 import './app/global.css'
+import '../public/screen-theme.css'
 import './embed/embed.css'
 import { isCard, isEmbedded, isScreenTheme } from './embed/config.js'
 
