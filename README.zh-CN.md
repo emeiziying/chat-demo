@@ -83,3 +83,13 @@ See [业务系统浮窗接入](docs/widget.md) for configuration, API methods an
 Screen dashboard cards are also supported: open `screen-demo.html` for inline chat,
 upward expansion aligned to the host column, and a dark screen theme. See
 [大屏卡片模式](docs/widget.md#大屏卡片模式).
+
+## GitHub Pages demos
+
+- [大屏卡片与向上展开](https://emeiziying.github.io/chat-demo/screen-demo.html)
+- [网页右下角浮窗](https://emeiziying.github.io/chat-demo/widget-demo.html)
+- [独立聊天页面](https://emeiziying.github.io/chat-demo/)
+
+Published from the `gh-pages` branch. Source changes live on `feature/floating-widget`;
+updating that branch does not automatically publish a new site. Rebuild and update
+`gh-pages` to release. API calls still require the user's own API key.
