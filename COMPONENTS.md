@@ -23,3 +23,6 @@ expand/collapse/toggleExpanded 只对卡片生效。销毁后的旧实例方法�
 卡片展开状态变化时，从宿主冒泡 `assistant:expand-change`，detail 为 `{ expanded: boolean }`。
 
 定位、样式变量、鉴权边界、示例与验证见 [接入文档](docs/widget.md)。
+
+screen 外壳样式支持 `--assistant-blur`、`--assistant-surface` 和
+`--assistant-fallback-surface`，分别控制背景模糊、半透明底色及不支持模糊时的降级底色。

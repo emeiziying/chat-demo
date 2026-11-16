@@ -27,6 +27,7 @@ export const setScreenTheme = (enabled: boolean) => {
     delete document.documentElement.dataset.chatTheme
   }
   syncTheme()
+  document.documentElement.style.colorScheme = enabled ? 'normal' : (appliedTheme ?? 'light')
   window.dispatchEvent(new Event(SCREEN_THEME_EVENT))
   syncPageBackground()
 }
@@ -60,7 +61,8 @@ const applyTheme = (theme: Theme) => {
   } else {
     body.removeAttribute('data-ds-dark-theme')
   }
-  document.documentElement.style.colorScheme = theme
+  // Match the transparent iframe element's scheme so the UA does not paint an opaque canvas.
+  document.documentElement.style.colorScheme = getScreenTheme() ? 'normal' : theme
   // 首次背景色同步在样式表加载完成后执行，适配 WebKit 的 defer 脚本执行顺序。
   if (document.readyState === 'complete') {
     syncPageBackground()

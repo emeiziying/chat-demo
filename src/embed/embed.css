@@ -11,7 +11,9 @@ html[data-embed] #root {
 
 /* Screen tokens sit above the original light/dark aliases without persisting a preference. */
 html[data-chat-theme='screen'] body {
-  --chat-surface: #112c3e;
+  color-scheme: normal;
+  /* Only the parent document can blur the dashboard behind the iframe. */
+  --chat-surface: transparent;
   --chat-surface-raised: #18394b;
   --chat-input-bg: #0c2331;
   --chat-text: #edf6ff;

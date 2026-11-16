@@ -200,17 +200,24 @@ document
    ```css
    .screen-right-column {
      --assistant-card-height: 285px;
-     --assistant-surface: #102d40f5;
+     --assistant-surface: rgba(16, 45, 64, 0.64);
+     --assistant-blur: 18px;
+     --assistant-fallback-surface: #102d40f5;
      --assistant-border: #69c6e847;
      --assistant-text: #eaf6ff;
      --assistant-accent: #35c6b4;
    }
    ```
 
+外壳使用 `backdrop-filter: blur(...) saturate(120%)` 模糊后方大屏，支持 WebKit 前缀。
+不支持背景模糊时使用较实的 fallback 底色，保证文字可读。调整透明度与模糊强度即可改变毛玻璃效果。
+
 2. iframe 内的聊天样式由 `src/embed/embed.css` 定义。`--chat-surface`、
    `--chat-input-bg`、`--chat-text`、`--chat-text-secondary`、`--chat-border`、
    `--chat-accent`、`--chat-user-bubble`、`--chat-assistant-bubble`、`--chat-radius`
-   映射到现有主题别名；组件通过 CSS Modules 中的 `data-presentation='card'`
+   映射到现有主题别名。`--chat-surface` 默认透明，让宿主外壳的模糊背景可见；
+   输入框、消息气泡、抽屉与弹窗各有独立底色，正文和控件保持清晰。不要对整个窗口使用
+   `filter: blur()`，也不要只在 iframe 内做背景模糊（无法采样 iframe 外的大屏）。组件通过 CSS Modules 中的 `data-presentation='card'`
    调整布局。修改这些源样式后重新构建。宿主 CSS 变量不会自动穿过 iframe。
 
 用户消息为蓝色气泡，助手消息为浅透明气泡；代码、表格保留内部横向滚动，

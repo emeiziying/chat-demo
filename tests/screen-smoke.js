@@ -53,6 +53,32 @@ async function smoke(page) {
   await frame.waitForSelector('textarea')
   await frame.waitForFunction(() => document.documentElement.dataset.chatTheme === 'screen')
   check((await page.locator('iframe').count()) === 1, 'card loads iframe immediately')
+  const glass = await panel.evaluate((el) => {
+    const style = getComputedStyle(el)
+    return {
+      filter: style.backdropFilter || style.webkitBackdropFilter,
+      background: style.backgroundColor,
+    }
+  })
+  check(glass.filter.includes('blur(18px)'), 'host applies Gaussian backdrop blur')
+  check(glass.background.includes('0.64'), 'host tint is translucent')
+  check(
+    (await page.locator('iframe').evaluate((el) => getComputedStyle(el).colorScheme)) ===
+      'normal' &&
+      (await frame.evaluate(() => getComputedStyle(document.documentElement).colorScheme)) ===
+        'normal',
+    'iframe and document schemes match for a transparent UA canvas'
+  )
+
+  check(
+    await frame.evaluate(
+      () =>
+        getComputedStyle(document.body).backgroundColor === 'rgba(0, 0, 0, 0)' &&
+        getComputedStyle(document.documentElement).backgroundColor === 'rgba(0, 0, 0, 0)'
+    ),
+    'iframe canvas stays transparent behind sharp chat content'
+  )
+
   check(
     !(await page.getByRole('button', { name: 'AI智能体', exact: true }).isVisible()),
     'card has no floating launcher'

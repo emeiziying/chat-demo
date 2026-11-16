@@ -84,7 +84,9 @@
         :host([data-theme="screen"]) { color-scheme: dark; }
         :host([data-theme="screen"]) .panel {
           border-color: var(--assistant-border, #69c6e847);
-          background: var(--assistant-surface, #102d40f5);
+          background: var(--assistant-surface, rgba(16, 45, 64, .64));
+          -webkit-backdrop-filter: blur(var(--assistant-blur, 18px)) saturate(120%);
+          backdrop-filter: blur(var(--assistant-blur, 18px)) saturate(120%);
           box-shadow: inset 0 0 18px #62b8f010, 0 8px 28px #06132255;
         }
         :host([data-theme="screen"]) .bar {
@@ -94,7 +96,10 @@
         :host([data-theme="screen"]) .title { color: var(--assistant-accent, #35c6b4); }
         :host([data-theme="screen"]) .minimize { color: #9ecbdc; }
         :host([data-theme="screen"]) .minimize:hover { background: #a3d3ed14; }
-        :host([data-theme="screen"]) iframe { background: #102d40; }
+        :host([data-theme="screen"]) iframe { background: transparent; color-scheme: normal; }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+          :host([data-theme="screen"]) .panel { background: var(--assistant-fallback-surface, #102d40f5); }
+        }
         @media (prefers-reduced-motion: reduce) { .launcher, .panel { transition: none; } }
       `
       const launcher = document.createElement('button')
