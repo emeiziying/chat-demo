@@ -294,3 +294,7 @@ npx --package @playwright/cli playwright-cli -s=layout run-code --filename tests
 `--screen-panel-background`、`--screen-panel-border`、`--screen-panel-shadow`、
 `--screen-panel-title`等变量。原`--assistant-*`变量仍可单独覆盖聊天外壳。
 宿主动态改变量不会穿过iframe；需改变会话内部颜色时，应修改共享调色板并重新构建。
+
+## 30 环境完整部署示例
+
+参见 [Chat 应用在 30 环境部署与业务大屏接入使用说明](deployment-30.md)。

@@ -95,3 +95,7 @@ and deploys pushes to this branch.
 For a manual deployment, open **Actions → Deploy GitHub Pages → Run workflow** and select
 `feature/floating-widget`. The old `gh-pages` branch is retained as release history.
 API calls still require the user's own API key.
+
+## 30 环境部署与业务大屏接入
+
+[使用说明](docs/deployment-30.md)涵盖独立部署、业务网关 Nginx 转发、大屏挂载、样式自定义、登录边界和验收排障。文中 IP 与域名为示例，需替换为实际配置。
